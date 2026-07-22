@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
+<meta content="#000000" name="theme-color"/>
+<title>Injective Terminal v8.0</title>
+
+
+
+
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<section hidden aria-label="Caricamento INJ Terminal" aria-live="polite" class="startup-loader" id="startupLoader" role="status">
+<div class="startup-loader-inner">
+<div aria-hidden="true" class="startup-spinner"><span></span></div>
+<p class="eyebrow">INJECTIVE</p>
+<h1>INJ Terminal</h1>
+<p class="startup-subtitle">Portfolio intelligence in tempo reale</p>
+<p class="startup-status" id="startupLoaderText">Connessione ai dati in tempo reale…</p>
+<button class="startup-retry" hidden="" id="startupRetry" type="button">Riprova</button>
+</div>
+</section>
+<div class="app-shell">
+<div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+<aside class="main-drawer" id="mainDrawer" aria-label="Menu principale" aria-hidden="true">
+  <div class="drawer-head"><div><span class="eyebrow">PORTFOLIO TRACKER</span><strong>Injective Terminal</strong></div><button class="drawer-close" id="drawerClose" type="button" aria-label="Chiudi menu">×</button></div>
+  <nav class="drawer-nav">
+    <button class="drawer-link active" data-drawer-action="dashboard" type="button">⌂ <span>Dashboard</span></button>
+    <button class="drawer-link" data-drawer-action="manage-wallets" type="button">◉ <span>Gestione wallet</span></button>
+    <button class="drawer-link" data-drawer-action="alerts" type="button">♢ <span>Avvisi prezzo</span></button>
+    <button class="drawer-link" data-drawer-action="data" type="button">⇩ <span>Gestione dati</span></button>
+  </nav>
+  <div class="drawer-settings">
+    <span class="drawer-section-label">INTERFACCIA</span>
+    <div class="interface-mode-grid" role="group" aria-label="Modalità interfaccia">
+<button class="interface-mode-button" id="drawerPrivacy" type="button" aria-pressed="false" title="Privacy">
+        <span class="interface-icon" aria-hidden="true">◉</span><span>Privacy</span>
+      </button>
+      <button class="interface-mode-button" id="drawerThemeCycle" type="button" aria-pressed="false" title="Change theme: Black, Light, Dark Blue">
+        <span class="interface-icon" aria-hidden="true">●</span><span>Tema: Nero</span>
+      </button>
+      <button class="interface-mode-button" id="drawerCurrency" type="button" aria-pressed="false" title="Cambia valuta tra dollaro ed euro">
+        <span class="interface-icon currency-toggle-icon" aria-hidden="true">$</span><span>Dollaro</span>
+      </button>
+      <button class="interface-mode-button active" id="drawerMotionButton" type="button" aria-pressed="true" title="Effetti visivi">
+        <span class="interface-icon" aria-hidden="true">✦</span><span>Effetti</span>
+      </button>
+      <button class="interface-mode-button" id="drawerHideCharts" type="button" aria-pressed="false" title="Nasconde o mostra tutti i grafici">
+        <span class="interface-icon" aria-hidden="true">▱</span><span>Hide charts</span>
+      </button>
+      <button class="interface-mode-button" id="drawerHideAnimations" type="button" aria-pressed="false" title="Disattiva o riattiva le animazioni numeriche">
+        <span class="interface-icon" aria-hidden="true">↕</span><span>Animazioni</span>
+      </button>
+      <button class="interface-mode-button" id="drawerLandscapeLive" type="button" aria-pressed="false" title="Visualizzazione LIVE a schermo intero su desktop e smartphone">
+        <span class="interface-icon" aria-hidden="true">▰</span><span>Live Display</span>
+      </button>
+    </div>
+  </div>
+  <div class="drawer-footer"><small>v8.0 · Currency & Theme Glow</small></div>
+</aside>
+<header class="topbar">
+<div class="menu-control" id="menuControl">
+<button aria-expanded="false" aria-controls="mainDrawer" aria-label="Apri menu" class="icon-button menu-toggle" id="menuToggle" title="Menu" type="button">
+<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+<span class="menu-button-label">MENU</span>
+</button>
+</div>
+<div class="brand-center">
+<h1 class="terminal-title terminal-title-pro"><span>INJECTIVE</span><b>TERMINAL</b></h1>
+<p class="subtitle terminal-subtitle">Portfolio intelligence · Staking · Market data</p>
+</div>
+<div class="header-search header-search-right" id="headerSearch">
+<button aria-expanded="false" aria-label="Cerca wallet" class="icon-button search-toggle" id="searchToggle" title="Cerca indirizzo">
+<svg aria-hidden="true" viewbox="0 0 24 24"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg>
+</button>
+<div class="search-shell" id="searchShell">
+<input aria-label="Indirizzo wallet Injective" autocomplete="off" id="addressInput" placeholder="inj1…" spellcheck="false"/>
+<button aria-label="Carica wallet" class="search-submit" id="loadButton">↵</button>
+</div>
+</div>
+</header>
+<div class="compact-status">
+<span class="status-pill" id="statusPill"><i></i><span id="statusText">Avvio…</span></span>
+<span id="lastUpdate">Mai aggiornato</span>
+</div><section aria-label="Tracked wallets" class="wallet-tabs-panel" id="multiwalletVisualize">
+<div class="wallet-tabs-heading"><span>Multi-Wallet View</span></div>
+<div class="wallet-tabs" id="walletTabs"></div>
+</section>
+<main>
+<div class="view-page active" id="dashboardView">
+<article aria-label="Prezzo Injective in tempo reale" class="card inj-price-card">
+<div class="inj-price-topline">
+<div>
+<span class="eyebrow">INJ / USDT</span>
+<span class="price-card-label">Injective Price</span>
+</div>
+<span class="live-badge"><i></i> LIVE</span>
+</div>
+<div class="inj-price-row">
+<strong class="inj-live-price" id="marketPrice">$0.0000</strong>
+<small class="inj-live-change" id="marketChange">—</small>
+</div>
+</article>
+<article class="card price-range-card" aria-label="Posizione del prezzo INJ nei principali timeframe">
+  <div class="price-range-head">
+    <div><span class="eyebrow">PRICE RANGE</span><strong>Min / Max timeframe</strong></div>
+    <small>Posizione live del prezzo</small>
+  </div>
+  <div class="price-range-list" id="priceRangeList">
+    <div class="price-range-row" data-range="1d"><span class="price-range-label">1G</span><span class="price-range-min" id="range1dMin">—</span><div class="price-range-track"><i class="price-range-marker" id="range1dMarker"></i></div><span class="price-range-max" id="range1dMax">—</span></div>
+    <div class="price-range-row" data-range="1w"><span class="price-range-label">1S</span><span class="price-range-min" id="range1wMin">—</span><div class="price-range-track"><i class="price-range-marker" id="range1wMarker"></i></div><span class="price-range-max" id="range1wMax">—</span></div>
+    <div class="price-range-row" data-range="1mo"><span class="price-range-label">1M</span><span class="price-range-min" id="range1moMin">—</span><div class="price-range-track"><i class="price-range-marker" id="range1moMarker"></i></div><span class="price-range-max" id="range1moMax">—</span></div>
+    <div class="price-range-row" data-range="1y"><span class="price-range-label">1Y</span><span class="price-range-min" id="range1yMin">—</span><div class="price-range-track"><i class="price-range-marker" id="range1yMarker"></i></div><span class="price-range-max" id="range1yMax">—</span></div>
+  </div>
+</article>
+<article class="card market-terminal dashboard-market graph-card">
+<div class="market-head chart-control-head">
+<div>
+<span class="eyebrow">MARKET</span>
+<strong class="chart-title">Market Chart</strong>
+</div>
+</div>
+<div class="chart-wrap market-wrap"><canvas aria-label="Grafico prezzo INJ" class="chart market-chart" id="marketChart"></canvas><div class="chart-tooltip" id="marketTooltip"></div></div>
+</article>
+<nav class="chart-timeframe-panel graph-ui" aria-label="Controlli timeframe Market Chart">
+<span>Timeframe</span>
+<div aria-label="Timeframe grafico" class="timeframe-tabs timeframe-tabs-bottom" id="timeframeTabs">
+<button data-tf="1min">1 MIN</button><button class="active" data-tf="1h">1H</button><button data-tf="1d">1D</button><button data-tf="1w">1W</button><button data-tf="1mo">1M</button><button data-tf="1y">1Y</button><button data-tf="all">ALL</button>
+</div>
+</nav>
+<section class="networth-section">
+<article class="card networth-live-card">
+<div class="card-heading"><div><strong class="chart-title">Net Worth</strong></div><span class="live-badge"><i></i> LIVE</span></div>
+<strong class="inj-live-price hero-value private" id="netWorthUsd">$0.00</strong>
+<span class="secondary-value private" id="netWorthInj">0.0000 INJ</span>
+</article>
+<article class="card hero-card graph-card networth-chart-card">
+<div class="card-heading"><div><strong class="chart-title">Net Worth Chart</strong></div></div>
+<div class="chart-wrap"><canvas aria-label="Grafico net worth" class="chart" id="netWorthChart"></canvas><div class="chart-tooltip" id="netWorthTooltip"></div></div>
+</article>
+<nav class="chart-timeframe-panel graph-ui networth-control-panel" aria-label="Net Worth timeframe controls">
+<span>Net Worth timeframe</span>
+<div aria-label="Net Worth timeframe" class="timeframe-tabs timeframe-tabs-bottom networth-timeframes" id="netWorthTimeframeTabs">
+<button data-tf="1min">1 MIN</button><button class="active" data-tf="1h">1H</button><button data-tf="1d">1D</button><button data-tf="1w">1W</button><button data-tf="1mo">1M</button><button data-tf="1y">1Y</button><button data-tf="all">ALL</button>
+</div>
+</nav>
+</section>
+<section class="metric-grid">
+<article class="card metric-card"><span>Disponibile</span><strong class="private" id="availableInj">0.000000</strong><small class="private" id="availableUsd">$0.00</small></article>
+<article class="card metric-card"><span>In staking</span><strong class="private" id="stakedInj">0.0000</strong><small class="private" id="stakedUsd">$0.00</small></article>
+<article class="card metric-card"><span>Rewards</span><strong class="private" id="rewardsInj">0.000000</strong><small class="private" id="rewardsUsd">$0.00</small></article>
+<article class="card metric-card"><span>APR netto stimato</span><strong id="aprValue">—</strong><small id="dailyEstimate">— INJ/giorno</small></article>
+<article class="card metric-card"><span>Market Cap INJ</span><strong id="marketCapValue">—</strong><small id="marketCapRank">CoinGecko</small></article>
+<article class="card metric-card"><span>Commissione media</span><strong id="commissionValue">—</strong><small id="networkAprValue">APR rete lordo —</small></article>
+</section>
+
+
+<section class="insights-section">
+<div class="section-title-row">
+<div><span class="validator-kicker">PORTFOLIO INTELLIGENCE</span><h2>Insight</h2></div>
+<span class="live-badge"><i></i> LIVE</span>
+</div>
+<section class="insight-grid">
+<article class="card insight-card reward-speed-card">
+<div class="insight-heading"><span>Rewards Speed</span><small>Current estimated rate</small></div>
+<strong class="focus-value" id="rewardPerSecond">—</strong>
+<span class="focus-sub" id="oneInjEta">—</span>
+</article>
+<article class="card insight-card sync-card">
+<div class="insight-heading"><span>Prossimo aggiornamento</span><small>Dati staking on-chain</small></div>
+<strong class="focus-value" id="syncCountdown">00:30</strong>
+<div class="mini-progress"><i id="syncProgress"></i></div>
+</article>
+<article class="card insight-card allocation-card">
+<div class="insight-heading"><span>Allocazione</span><small>Staked e liquidità</small></div>
+<div class="allocation-layout">
+<div class="allocation-ring" id="allocationRing"><span id="stakeAllocation">0%</span></div>
+<div class="allocation-legend"><span><i class="stake-dot"></i>Staked <b id="stakeAllocationText">0%</b></span><span><i class="liquid-dot"></i>Liquidità <b id="liquidAllocationText">0%</b></span></div>
+</div>
+</article>
+<article class="card insight-card ath-card">
+<div class="insight-heading"><span>Peak Net Worth</span><small>Saved personal record</small></div>
+<strong class="focus-value private" id="athValue">—</strong>
+<span class="focus-sub" id="athDate">—</span>
+<span class="new-ath" hidden="" id="newAthBadge">NEW ATH</span>
+</article>
+<article class="card insight-card milestone-card">
+<div class="insight-heading"><span>Prossimo obiettivo</span><small id="milestoneRemaining">—</small></div>
+<div class="milestone-values"><strong id="milestoneGoal">—</strong><span id="milestonePercent">0%</span></div>
+<div class="goal-progress"><i id="milestoneBar"></i></div>
+<span class="focus-sub" id="milestoneEta">—</span>
+</article>
+<article class="card insight-card sentiment-card">
+<div class="insight-heading"><span>Market Sentiment</span><small>Synthetic INJ momentum</small></div>
+<strong class="focus-value" id="sentimentLabel">Neutral</strong>
+<div class="sentiment-track"><i id="sentimentBar"></i></div>
+<span class="focus-sub" id="sentimentScore">50 / 100</span>
+</article>
+<article class="card insight-card reward-target-card">
+<div class="insight-heading"><span>Daily Rewards Target</span><small>Required INJ price to reach your target</small></div>
+<label class="reward-target-input">
+<span>Daily target</span>
+<div><b>$</b><input id="dailyRewardTargetUsd" type="number" min="0" step="1" inputmode="decimal" value="100" aria-label="Daily reward target in dollars"></div>
+</label>
+<div class="reward-target-result">
+<span>Required INJ Price</span>
+<strong id="requiredInjPrice">—</strong>
+<small id="rewardTargetSummary"></small>
+</div>
+<div class="reward-target-details">
+<span>Staked INJ <b id="rewardTargetStaked">—</b></span>
+<span>Estimated rewards/day <b id="rewardTargetDailyInj">—</b></span>
+<span>APR used <b id="rewardTargetApr">—</b></span>
+</div>
+</article>
+<article class="card insight-card reward-forecast-card">
+<div class="insight-heading"><span>Rewards Forecast</span><small>Projection using current net APR</small></div>
+<div class="forecast-mode" id="forecastMode"><button class="active" data-mode="compound">Compound</button><button data-mode="linear">Linear</button></div>
+<div class="reward-forecast-grid">
+<div><span>Today</span><strong class="private" id="forecastToday">—</strong></div>
+<div><span>Tomorrow</span><strong class="private" id="forecastTomorrow">—</strong></div>
+<div><span>7 days</span><strong class="private" id="forecast7d">—</strong></div>
+<div><span>30 days</span><strong class="private" id="forecast30d">—</strong></div>
+<div><span>365 days</span><strong class="private" id="forecast365d">—</strong></div>
+</div>
+<p class="forecast-note" id="forecastNote">Compound giornaliero simulato</p>
+</article></section>
+<article class="card achievements-card">
+<div class="insight-heading"><span>Achievement</span><small>Traguardi del portfolio</small></div>
+<div class="achievement-list" id="achievementList"></div>
+</article>
+</section>
+<section class="timeline-section" id="timelineSection">
+<article class="card timeline-card">
+<div class="v5-heading"><div><span class="validator-kicker">HISTORY</span><h2>Portfolio Time Machine</h2></div><div class="timeline-actions"><button class="text-button" id="liveTimeline">LIVE</button><button class="secondary-button compact" id="replayPortfolio">▶ Replay</button></div></div>
+<input disabled="" id="timelineSlider" max="0" min="0" step="1" type="range" value="0"/>
+<div class="timeline-meta"><span id="timelineDate">Lo storico inizierà dal primo salvataggio</span><strong id="timelineMode">LIVE</strong></div>
+</article>
+</section>
+<section class="validator-section">
+<article class="card validator-card">
+<div class="validator-header">
+<div>
+<span class="validator-kicker">STAKING</span>
+<h2>Validator</h2>
+</div>
+<span class="validator-count-pill" id="validatorCount">Nessuna delegazione</span>
+</div>
+<div class="validator-list" id="validatorList">
+<div class="validator-empty">Carica un wallet per vedere i validator.</div>
+</div>
+<p class="formula-note" id="aprMethod">APR calcolato dai dati on-chain e al netto delle commissioni.</p>
+</article>
+</section>
+<section class="price-simulator-section" id="priceSimulatorSection">
+<article class="card price-simulator-card">
+<div class="validator-header">
+<div>
+<span class="validator-kicker">SIMULATOR</span>
+<h2>INJ Price Calculator</h2>
+</div>
+<span class="validator-count-pill">Market Cap ÷ Supply</span>
+</div>
+<div class="price-simulator-result investment-hero">
+<span>Prezzo teorico INJ</span>
+<strong id="simulatedInjPrice">$0.00</strong>
+<small id="simulatedPriceDelta">Inserisci una market cap</small>
+</div>
+<div class="simulator-comparison-grid">
+<div><span>Prezzo attuale</span><strong id="simCurrentPrice">—</strong></div>
+<div><span>Moltiplicatore</span><strong id="simPriceMultiple">—</strong></div>
+<div><span>Potenziale</span><strong id="simPotentialPct">—</strong></div>
+</div>
+<div class="price-simulator-fields single-field">
+<label>
+<div class="simulator-field-heading"><span>Market Cap ipotetica</span><strong id="simMarketCapFormatted">$1,00 Mld</strong></div>
+<div class="simulator-input-shell"><b>$</b><input autocomplete="off" id="marketCapSimulatorInput" inputmode="decimal" placeholder="es. 2B" value="1B"/></div>
+<input aria-label="Market Cap ipotetica da zero a un trilione di dollari" class="market-cap-range" id="marketCapRange" max="1000" min="0" step="1" type="range" value="1"/>
+<div class="range-labels"><span>$0</span><span>$1 Trillion</span></div>
+</label>
+</div>
+<div aria-live="polite" class="simulator-live-cap">
+<div><span class="live-badge"><i></i> LIVE</span><small>Current Injective Market Cap</small></div>
+<strong id="simCurrentMarketCap">—</strong>
+</div>
+<div class="simulator-wallet-value" id="simulatorWalletValue">
+<div class="simulator-wallet-copy">
+<span>Valore wallet simulato</span>
+<strong id="simulatedWalletUsd">—</strong>
+<small id="simulatedWalletStatus">Load an Injective address</small>
+</div>
+<div class="simulator-wallet-balance">
+<span>INJ posseduti</span>
+<strong id="simulatedWalletInj">—</strong>
+<small>Available + staked + rewards</small>
+</div>
+<div class="simulator-wallet-balance wallet-current">
+<span>Valore attuale</span>
+<strong id="simulatedWalletCurrentUsd">—</strong>
+<small id="simulatedWalletGain">Potential difference —</small>
+</div>
+</div>
+<div class="network-position" id="networkPosition">
+<div class="network-position-heading">
+<div><span class="validator-kicker">NETWORK POSITION</span><h3>Quota del wallet nella rete</h3></div>
+<span class="live-badge"><i></i> LIVE</span>
+</div>
+<div class="network-share-grid">
+<div class="network-share-item">
+<span>Share of Total Supply</span>
+<strong id="walletSupplyShare">—</strong>
+<small>Percentuale di tutti gli INJ posseduta</small>
+</div>
+<div class="network-share-item">
+<span>Share of Total Stakedd</span>
+<strong id="walletStakeddShare">—</strong>
+<small>Quota del wallet rispetto agli Staked INJ</small>
+</div>
+</div>
+</div>
+<p class="formula-note">Calcolo basato sulla Total Supply on-chain: <strong id="simulatorSupplyUsed">—</strong>. Puoi usare K, M, B e T per la Market Cap.</p>
+</article>
+<article class="card supply-card tokenomics-simple" id="supplyCard">
+<div class="validator-header">
+<div>
+<span class="validator-kicker">TOKENOMICS</span>
+<h2>Injective Network</h2>
+</div>
+<span class="live-badge"><i></i> ON-CHAIN</span>
+</div>
+<div class="tokenomics-metrics">
+<div class="tokenomics-stat tokenomics-primary"><span>Total Stakedd</span><strong id="networkTotalStakedd">53.895.670</strong><small>INJ</small></div>
+<div class="tokenomics-stat tokenomics-primary"><span>INJ Burned</span><strong id="networkInjBurned">7.189.186</strong><small>INJ</small></div>
+</div>
+<div class="tokenomics-bars">
+<div class="tokenomics-progress-row"><div><span>Supply in staking</span><strong id="networkStakeddPct">—</strong></div><div class="tokenomics-track"><i id="networkStakeddBar"></i></div></div>
+<div class="tokenomics-progress-row"><div><span>Supply burned</span><strong id="networkBurnedPct">—</strong></div><div class="tokenomics-track"><i id="networkBurnedBar"></i></div></div>
+</div>
+<p class="formula-note">Dati aggiornati dalla rete Injective. La Total Supply resta utilizzata internamente dal simulatore.</p>
+</article>
+</section>
+<section class="intelligence-modules" id="proSuite">
+
+<section class="pro-grid pro-grid-wide">
+
+
+</section>
+<section class="pro-grid">
+
+
+<article class="card pro-card wallet-score-card">
+<div class="pro-head"><div><span class="validator-kicker">WALLET HEALTH</span><h3>Health Score</h3></div><strong class="score-orb" id="proHealthScore">—</strong></div>
+<div class="score-ring"><svg viewbox="0 0 120 120"><circle cx="60" cy="60" r="50"></circle><circle cx="60" cy="60" id="scoreRingValue" r="50"></circle></svg><span id="scoreVerdict">In attesa</span></div>
+<div class="risk-list" id="riskList"></div>
+</article>
+<article class="card pro-card validator-intelligence-card">
+<div class="pro-head"><div><span class="validator-kicker">VALIDATOR INTELLIGENCE</span><h3>Analisi validator</h3></div><span class="status-mini" id="validatorRiskBadge">—</span></div>
+<div class="validator-intel-list" id="validatorIntelList"><p>Carica un wallet per analizzare i validator.</p></div>
+</article>
+
+
+<article class="card pro-card data-control-card">
+<div class="pro-head"><div><span class="validator-kicker">DATA CONTROL</span><h3>Backup e diagnostica</h3></div><div class="status-cluster"><span class="status-mini" id="cloudSyncStatus">CHAIN…</span><span class="status-mini" id="pwaStatus">WEB</span></div></div>
+<div class="data-actions"><button id="cloudSyncNow">Ricostruisci dalla chain</button><button id="exportJson">Esporta JSON</button><button id="exportCsv">Esporta CSV</button><button id="importBackup">Importa backup</button><button id="runDiagnostics">Diagnostica</button></div>
+<input accept="application/json" hidden="" id="backupFile" type="file"/>
+<div class="diagnostic-output" id="diagnosticOutput">Chain come fonte primaria · cache locale e backup manuale attivi</div>
+</article>
+</section>
+</section>
+<section class="v5-command-center" id="commandCenter">
+<article class="card health-card-v5">
+<div class="v5-heading"><div><span class="validator-kicker">SYSTEM</span><h2>Portfolio Health</h2></div><strong id="healthScore">—</strong></div>
+<div class="health-track"><i id="healthBar"></i></div>
+<div class="health-items" id="healthItems"></div>
+</article>
+<article class="card smart-insights-card">
+<div class="v5-heading"><div><span class="validator-kicker">INTELLIGENCE</span><h2>Insights automatici</h2></div><span class="live-badge"><i></i> LIVE</span></div>
+<div class="smart-insight-list" id="smartInsightList"><p>Carica un wallet per generare gli insight.</p></div>
+</article>
+<article class="card performance-monitor-card">
+<div class="v5-heading"><div><span class="validator-kicker">PERFORMANCE</span><h2>Monitor</h2></div><span class="status-mini" id="monitorStatus">ONLINE</span></div>
+<div class="monitor-grid">
+<div><span>API</span><strong id="apiLatency">— ms</strong></div>
+<div><span>WS</span><strong id="wsMonitor">—</strong></div>
+<div><span>Refresh</span><strong id="refreshMonitor">30 s</strong></div>
+<div><span>Storage</span><strong id="storageMonitor">—</strong></div>
+</div>
+</article>
+</section>
+</div>
+</main>
+<footer><span>Injective Terminal v8.0</span><span id="endpointLabel">API: —</span></footer>
+</div>
+<dialog class="pro-dialog wallet-manager-dialog" id="walletManagerDialog">
+<form method="dialog">
+<div class="pro-head"><div><span class="validator-kicker">MULTI-WALLET</span><h3>Gestisci indirizzi</h3></div><button class="dialog-close" value="cancel" aria-label="Chiudi">×</button></div>
+<p class="wallet-manager-help">La rimozione agisce solo sulla dashboard. Prima di eliminare un indirizzo viene richiesta conferma.</p>
+<div class="wallet-manager-list" id="walletManagerList"></div>
+<div class="wallet-manager-actions"><button class="secondary-button" value="cancel">Chiudi</button></div>
+</form></dialog>
+<dialog class="pro-dialog alert-dialog" id="alertCenterDialog">
+<form method="dialog">
+<div class="pro-head"><div><span class="validator-kicker">PRICE ALERT</span><h3>Avvisi sul prezzo INJ</h3></div><button class="dialog-close" value="cancel">×</button></div>
+<div class="alert-form"><select id="alertMetric"><option value="priceAbove">Prezzo sopra</option><option value="priceBelow">Prezzo sotto</option></select><input id="alertThreshold" inputmode="decimal" placeholder="Soglia"/><button class="mini-action" id="addAlert" type="button">＋ Aggiungi</button></div>
+<div class="alert-list-pro" id="alertList"></div>
+</form></dialog>
+<div aria-live="polite" class="toast" id="toast" role="status"></div>
+
+<div class="landscape-live" id="landscapeLive" hidden aria-hidden="true">
+  <button class="landscape-live-exit" id="landscapeLiveExit" type="button" aria-label="Close Live Display">×</button>
+  
+  <div class="landscape-live-content">
+    <section class="landscape-live-block landscape-price-block">
+      <span class="landscape-kicker"><i></i> INJ / USDT LIVE</span>
+      <strong class="landscape-main-value" id="landscapeMarketPrice">$0.0000</strong>
+      <span class="landscape-change" id="landscapeMarketChange">—</span>
+    </section>
+    <div class="landscape-live-divider" aria-hidden="true"></div>
+    <section class="landscape-live-block landscape-worth-block" aria-live="polite">
+      <span class="landscape-kicker" id="landscapeWalletLabel">CONTROVALORE WALLET</span>
+      <strong class="landscape-worth-value" id="landscapeWalletWorth">$0,00</strong>
+      <span class="landscape-wallet-inj" id="landscapeWalletInj">0,000000 INJ</span>
+      <span class="landscape-wallet-address" id="landscapeWalletAddress">inj1…</span>
+      <div class="landscape-wallet-breakdown" id="landscapeWalletBreakdown">
+        <span><em>Disponibili</em><b id="landscapeWalletAvailable">0,000000</b></span>
+        <span><em>Stake</em><b id="landscapeWalletStaked">0,000000</b></span>
+        <span><em>Reward</em><b id="landscapeWalletRewards">0,000000</b></span>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
