@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#05070b">
+<title>INJ Terminal · Live Display</title>
+<style>
+:root{--bg:#05070b;--text:#f7f9fc;--muted:#9aa7bd;--line:rgba(154,168,190,.25);--up:#27d8b0;--down:#ff5d73}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body.theme-light{--bg:#f4f7fb;--text:#111827;--muted:#667085;--line:rgba(15,23,42,.18);--up:#087f5b;--down:#c92a2a}
+body.theme-blue{--bg:#06101f;--text:#f7fbff;--muted:#9caec7;--line:rgba(132,166,212,.25);--up:#2ef7c4;--down:#ff6b7a}
+.live{position:fixed;inset:0;display:grid;grid-template-rows:minmax(0,1fr) 1px minmax(0,1fr);padding:max(18px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(18px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));background:radial-gradient(circle at 50% 0,rgba(39,216,176,.055),transparent 28%),var(--bg)}
+.exit{position:fixed;z-index:10;top:max(12px,env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));width:38px;height:38px;border:1px solid rgba(148,163,184,.35);border-radius:50%;background:rgba(15,23,42,.58);color:var(--text);font-size:1.55rem;font-weight:300;line-height:1;display:grid;place-items:center;padding:0;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+body.theme-light .exit{background:rgba(255,255,255,.82)}
+.panel{min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:clamp(10px,2.2vh,28px) clamp(4px,2vw,24px)}
+.divider{height:1px;width:min(1180px,92%);justify-self:center;background:var(--line)}
+.kicker{display:flex;align-items:center;gap:13px;color:var(--muted);font-size:clamp(.72rem,2.4vw,1.05rem);font-weight:850;letter-spacing:.24em;white-space:nowrap}.kicker i{width:12px;height:12px;border-radius:50%;background:var(--up);box-shadow:0 0 22px var(--up)}
+.price{margin:clamp(24px,4vh,52px) 0 0;font-size:clamp(4.2rem,18vw,9.2rem);line-height:.88;letter-spacing:-.065em;white-space:nowrap;font-variant-numeric:tabular-nums}
+.change{margin-top:clamp(22px,4vh,48px);font-size:clamp(1.35rem,5vw,2.45rem);font-weight:850}.change.up{color:var(--up)}.change.down{color:var(--down)}
+.wallet-title{color:var(--muted);font-size:clamp(.72rem,2.4vw,1.05rem);font-weight:850;letter-spacing:.23em;white-space:nowrap}
+.worth{margin-top:clamp(22px,3.5vh,44px);font-size:clamp(3.7rem,15vw,7.8rem);line-height:.9;letter-spacing:-.06em;white-space:nowrap;font-variant-numeric:tabular-nums}
+.total{margin-top:clamp(18px,2.8vh,30px);font-size:clamp(1.15rem,4.4vw,2rem);font-weight:850;color:#9ff0d2;white-space:nowrap;font-variant-numeric:tabular-nums}body.theme-light .total{color:#087f5b}
+.address{margin-top:clamp(8px,1.6vh,16px);color:var(--muted);font-size:clamp(.75rem,2.7vw,1.08rem);white-space:nowrap}
+.breakdown{width:min(820px,100%);margin-top:clamp(18px,3vh,34px);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;column-gap:clamp(5px,2vw,24px)}
+.metric{min-width:0;display:flex;align-items:baseline;justify-content:center;gap:.35em;white-space:nowrap;color:var(--muted);font-size:clamp(.66rem,2.55vw,1rem)}
+.metric b{display:inline!important;min-width:0;color:var(--text);font-size:1em;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums;letter-spacing:0}
+.status{position:fixed;left:50%;bottom:max(8px,env(safe-area-inset-bottom));transform:translateX(-50%);color:var(--muted);font-size:.66rem;white-space:nowrap;opacity:.8}
+@media (orientation:portrait) and (max-width:520px){.live{padding-left:12px;padding-right:12px}.panel:first-of-type{padding-top:44px}.price{font-size:clamp(4rem,20vw,6.8rem)}.worth{font-size:clamp(3.3rem,16vw,5.5rem)}.breakdown{column-gap:3px}.metric{gap:.22em;font-size:clamp(.59rem,2.55vw,.78rem)}.exit{width:34px;height:34px;font-size:1.35rem}}
+@media (orientation:landscape) and (max-height:650px){.live{grid-template-columns:minmax(0,1fr) 1px minmax(0,1fr);grid-template-rows:1fr;padding-top:max(8px,env(safe-area-inset-top));padding-bottom:max(8px,env(safe-area-inset-bottom))}.divider{width:1px;height:82%;align-self:center}.panel{padding:4px clamp(10px,2vw,26px)}.price{font-size:clamp(3.2rem,10.2vw,6rem);margin-top:clamp(12px,3vh,24px)}.change{font-size:clamp(1rem,2.7vw,1.5rem);margin-top:clamp(10px,3vh,22px)}.worth{font-size:clamp(2.7rem,7.7vw,4.8rem);margin-top:clamp(10px,2.8vh,20px)}.total{font-size:clamp(.9rem,2.4vw,1.3rem);margin-top:clamp(7px,2vh,13px)}.address{font-size:clamp(.62rem,1.55vw,.88rem);margin-top:5px}.kicker,.wallet-title{font-size:clamp(.56rem,1.35vw,.82rem)}.breakdown{margin-top:clamp(8px,2.2vh,15px);column-gap:4px}.metric{font-size:clamp(.52rem,1.35vw,.76rem);gap:.2em}.exit{width:30px;height:30px;font-size:1.2rem;top:max(6px,env(safe-area-inset-top));right:max(7px,env(safe-area-inset-right))}.status{display:none}}
+</style>
+</head>
+<body>
+<main class="live">
+<button class="exit" id="exit" type="button" aria-label="Torna alla Dashboard">×</button>
+<section class="panel">
+<div class="kicker"><i></i> INJ / USDT LIVE</div>
+<strong class="price" id="price">$0.0000</strong>
+<div class="change" id="change">— · 24H</div>
+</section>
+<div class="divider" aria-hidden="true"></div>
+<section class="panel">
+<div class="wallet-title">CONTROVALORE WALLET</div>
+<strong class="worth" id="worth">$0.00</strong>
+<div class="total" id="total">0,000000 INJ</div>
+<div class="address" id="address">inj1…</div>
+<div class="breakdown">
+<div class="metric"><span>Disponibili</span><b id="available">0,000000</b></div>
+<div class="metric"><span>Stake</span><b id="staked">0,000000</b></div>
+<div class="metric"><span>Reward</span><b id="rewards">0,000000</b></div>
+</div>
+</section>
+</main>
+<div class="status" id="status">Connessione…</div>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);const DEC=1e18;
+const address=(new URLSearchParams(location.search).get('address')||localStorage.getItem('inj_address')||'').trim();
+let price=0,available=0,staked=0,rewards=0,eur=Number(localStorage.getItem('inj_eur_rate_v8'))||.86;
+const currency=localStorage.getItem('inj_currency')==='EUR'?'EUR':'USD';
+const theme=localStorage.getItem('inj_theme_v8')||localStorage.getItem('inj_theme')||'black';
+if(theme==='light')document.body.classList.add('theme-light');if(theme==='blue'||theme==='dark-blue')document.body.classList.add('theme-blue');
+function num(v){v=Number(v);return Number.isFinite(v)?v:0}function fromWei(v){return num(v)/DEC}
+function money(v,d=2){const val=currency==='EUR'?v*eur:v;return new Intl.NumberFormat(currency==='EUR'?'it-IT':'en-US',{style:'currency',currency,minimumFractionDigits:d,maximumFractionDigits:d}).format(val)}
+function inj(v){return num(v).toLocaleString('it-IT',{minimumFractionDigits:6,maximumFractionDigits:6})}
+function short(a){return a&&a.length>18?`${a.slice(0,9)}…${a.slice(-6)}`:(a||'inj1…')}
+function render(){const total=available+staked+rewards;$('price').textContent=money(price,4);$('worth').textContent=money(total*price,2);$('total').textContent=`${inj(total)} INJ`;$('available').textContent=inj(available);$('staked').textContent=inj(staked);$('rewards').textContent=inj(rewards);$('address').textContent=short(address)}
+async function get(url,timeout=9000){const c=new AbortController(),t=setTimeout(()=>c.abort(),timeout);try{const r=await fetch(url,{cache:'no-store',signal:c.signal});if(!r.ok)throw Error(r.status);return await r.json()}finally{clearTimeout(t)}}
+const lcdBases=['https://sentry.lcd.injective.network:443','https://lcd.injective.network','https://1rpc.io/inj-lcd'];
+async function lcd(path){for(const b of lcdBases){try{return await get(b+path)}catch(e){}}throw Error('LCD offline')}
+async function loadWallet(){if(!/^inj1[0-9a-z]{38,60}$/i.test(address)){$('status').textContent='Nessun wallet selezionato';render();return}try{const [bank,del,rew]=await Promise.all([lcd(`/cosmos/bank/v1beta1/balances/${address}`),lcd(`/cosmos/staking/v1beta1/delegations/${address}`),lcd(`/cosmos/distribution/v1beta1/delegators/${address}/rewards`)]);available=(bank.balances||[]).filter(x=>x.denom==='inj').reduce((s,x)=>s+fromWei(x.amount),0);staked=(del.delegation_responses||[]).reduce((s,x)=>s+fromWei(x?.balance?.amount),0);rewards=(rew.total||[]).filter(x=>x.denom==='inj').reduce((s,x)=>s+fromWei(x.amount),0);$('status').textContent=`Aggiornato ${new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})}`;render()}catch(e){$('status').textContent='Dati wallet temporaneamente non disponibili'}}
+async function initialPrice(){try{const t=await get('https://api.binance.com/api/v3/ticker/24hr?symbol=INJUSDT');price=num(t.lastPrice);setChange(num(t.priceChangePercent));render()}catch(e){}}
+function setChange(v){const el=$('change');el.textContent=`${v>=0?'+':''}${v.toFixed(2)}% · 24H`;el.className=`change ${v>0?'up':v<0?'down':''}`}
+function socket(){try{const ws=new WebSocket('wss://stream.binance.com:9443/ws/injusdt@ticker');ws.onmessage=e=>{try{const t=JSON.parse(e.data);price=num(t.c);setChange(num(t.P));render()}catch{}};ws.onopen=()=>{$('status').textContent='LIVE'};ws.onclose=()=>setTimeout(socket,3500);ws.onerror=()=>ws.close()}catch(e){setTimeout(socket,4000)}}
+function exit(){if(history.length>1)history.back();else location.replace('index.html')}
+$('exit').addEventListener('click',exit,{passive:true});document.addEventListener('keydown',e=>{if(e.key==='Escape')exit()});
+initialPrice();loadWallet();socket();setInterval(loadWallet,30000);
+</script>
+</body>
+</html>
